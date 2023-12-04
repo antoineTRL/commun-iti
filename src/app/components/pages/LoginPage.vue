@@ -10,62 +10,92 @@ const [authService] = useProvider([AuthenticationService]);
 const router = useRouter();
 
 const loginModel = reactive({
-  username: "",
-  password: ""
+    username: "",
+    password: ""
 });
 
 const userNameRegex = /^(\w+)$/i;
 
 const loginFormRules = reactive<FormRules>({
-  username: [
-  
-  ],
-  password: [
-  
-  ]
+    username: [
+        {
+            required: true,
+            message: "Veuillez renseigner votre Pseudo"
+        },
+        {
+            pattern: userNameRegex,
+            message: "Format du pseudo invalide. Utilisez des caractères alphanumériques."
+        }
+    ],
+    password: [
+        {
+            required: true,
+            message: "Mot de passe obligatoire"
+        }
+    ]
 });
 
 async function onSubmit(form?: FormInstance) {
-  if (!form) {
-    return;
-  }
+    if (!form) {
+        return;
+    }
 
-  try {
-    await form.validate();
+    try {
+        await form.validate();
 
-  } catch (e) {
-    return;
-  }
+        // Appeler le service d'authentification pour authentifier l'utilisateur
+        const isAuthenticated = await authService.authenticate({
+            username: loginModel.username,
+            password: loginModel.password
+        });
+
+        if (isAuthenticated) {
+            // Rediriger l'utilisateur sur /app en cas de succès
+            router.push('/app');
+        } else {
+            // Afficher un message d'erreur si l'authentification a échoué
+            ElMessage.error("Nom d'utilisateur ou mot de passe incorrect");
+        }
+
+    } catch (e) {
+        console.error("Erreur de validation :", e);
+        return;
+    }
 }
 </script>
+
 <template>
-  <div class="login center-children full-h">
-    <main class="width-s">
-      <h1 class="login-title">Se connecter</h1>
+    <div class="login center-children full-h">
+        <main class="width-s">
+            <h1 class="login-title">Se connecter</h1>
 
-      <div class="login-form">
-        <el-form
-          ref="form"
-          :model="loginModel"
-          :rules="loginFormRules"
-          label-position="top"
-          class="login-form"
-          @submit.prevent=""
-        >
-          <el-form-item label="Pseudo" prop="username"> </el-form-item>
+            <div class="login-form">
+                <el-form
+                        ref="form"
+                        :model="loginModel"
+                        :rules="loginFormRules"
+                        label-position="top"
+                        class="login-form"
+                        @submit.prevent="onSubmit($refs.form)"
+                >
+                    <el-form-item label="Nom d'utilisateur" prop="username">
+                        <el-input v-model="loginModel.username" />
+                    </el-form-item>
 
-          <el-form-item label="Mot de passe" prop="password"> </el-form-item>
+                    <el-form-item label="Mot de passe" prop="password">
+                        <el-input v-model="loginModel.password" type="password" />
+                    </el-form-item>
 
-          <el-form-item>
-            <div class="form-actions">
-              <el-button type="primary" native-type="submit">Connexion</el-button>
-              <router-link to="/register">Je n'ai pas de compte</router-link>
+                    <el-form-item>
+                        <div class="form-actions">
+                            <el-button type="primary" native-type="submit">Connexion</el-button>
+                            <router-link to="/register">Je n'ai pas de compte</router-link>
+                        </div>
+                    </el-form-item>
+                </el-form>
             </div>
-          </el-form-item>
-        </el-form>
-      </div>
-    </main>
-  </div>
+        </main>
+    </div>
 </template>
 <style scoped lang="scss">
 @use "@/app/styles/var";

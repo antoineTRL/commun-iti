@@ -12,6 +12,7 @@ import MessageInput from "@/app/components/domain/message/MessageInput.vue";
     <main>
       <main>
         <!-- TODO -->
+          <router-view></router-view> <!-- Vue Router se rendra ici -->
       </main>
 
       <footer>

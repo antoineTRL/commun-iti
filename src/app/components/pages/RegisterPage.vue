@@ -23,23 +23,69 @@ const registerFormRules = reactive<FormRules>({
     {
       required: true,
       message: "Pseudo obligatoire"
+    },
+      {
+          pattern: userNameRegex,
+          message: "Format du pseudo invalide. Utilisez des caractères alphanumériques."
+      }
+  ],
+  password: [
+      {
+      required: true,
+      message: "Mot de passe obligatoire"
     }
   ],
-  password: [],
-  passwordConfirmation: []
+  passwordConfirmation: [
+    {
+      required: true,
+      message: "Confirmation du mot de passe obligatoire"
+    },
+    {
+      validator: (rule, value, callback) => {
+        if (value !== registerModel.password) {
+          callback(new Error("Les mots de passe ne correspondent pas"));
+        } else {
+          callback();
+        }
+      }
+    }
+  ]
 });
 
 async function onSubmit(form?: FormInstance) {
-  if (!form) {
-    return;
-  }
+    if (!form) {
+        return;
+    }
 
-  try {
-    await form.validate();
-  } catch (e) {
-    return;
-  }
+    try {
+        await form.validate();
+
+        // Vérifier si l'utilisateur existe déjà
+        const userExists = await userApi.exists(registerModel.username);
+
+        if (userExists) {
+            // Afficher un message indiquant que l'utilisateur existe déjà
+            ElMessage.error("Cet utilisateur existe déjà. Veuillez choisir un autre nom d'utilisateur.");
+            return; // Arrêter le processus d'enregistrement
+        }
+
+        // Si la validation réussit, enregistrer l'utilisateur via userApi
+        await userApi.register({
+            username: registerModel.username,
+            password: registerModel.password
+            // Ajoutez d'autres champs si nécessaire pour l'enregistrement
+        });
+
+        // Redirection vers une page après l'enregistrement réussi, par exemple :
+        router.push('/login'); // Changer '/confirmation' par votre route appropriée
+
+    } catch (error) {
+        // Gérer les erreurs de validation ou d'enregistrement ici
+        console.error("Erreur lors de l'enregistrement de l'utilisateur :", error);
+        ElMessage.error("Erreur lors de l'enregistrement. Veuillez réessayer.");
+    }
 }
+
 </script>
 <template>
   <div class="register center-children full-h">
@@ -59,9 +105,12 @@ async function onSubmit(form?: FormInstance) {
             <el-input v-model="registerModel.username" />
           </el-form-item>
 
-          <el-form-item label="Mot de passe" prop="password"> </el-form-item>
+          <el-form-item label="Mot de passe" prop="password">
+              <el-input v-model="registerModel.password" />
+          </el-form-item>
 
           <el-form-item label="Confirmez votre mot de passe" prop="passwordConfirmation">
+              <el-input v-model="registerModel.passwordConfirmation" />
           </el-form-item>
 
           <el-form-item>

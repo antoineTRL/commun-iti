@@ -1,30 +1,38 @@
-<script lang="ts" setup>
-import UserProfileMenuItem from "./UserProfileMenuItem.vue";
-import RoomMenuItem from "./RoomMenuItem.vue";
+<script setup lang="ts">
+import UserProfileMenuItem from './UserProfileMenuItem.vue';
+import RoomMenuItem from './RoomMenuItem.vue';
+import RoomList from '@/app/components/domain/room/RoomList.vue';
+import { useStore } from '@/app/platform';
+import { RoomStore } from '@/modules/room/store';
 
+const store = useStore(RoomStore);
+
+function selectRoom(room) {
+    store.setCurrentRoom(room);
+}
 </script>
 
 <template>
-  <div class="left-menu stretch-wh">
-    <div class="left-menu-top">
-      <user-profile-menu-item class="user" />
-    </div>
+    <div class="left-menu stretch-wh">
+        <div class="left-menu-top">
+            <UserProfileMenuItem class="user" />
+        </div>
 
-    <h3>Salons</h3>
+        <h3>Salons</h3>
 
-    <div class="left-menu-middle">
-      <!-- Room List -->
-    </div>
+        <div class="left-menu-middle">
+            <RoomList :rooms="store.state.rooms" @selectRoom="selectRoom" />
+        </div>
 
-    <div class="left-menu-bottom">
-      <room-menu-item />
+        <div class="left-menu-bottom">
+            <RoomMenuItem />
+        </div>
     </div>
-  </div>
 </template>
 
 <style lang="scss" scoped>
-@use "sass:map";
-@use "@/app/styles/var";
+@use 'sass:map';
+@use '@/app/styles/var';
 
 .left-menu {
   display: flex;
@@ -37,7 +45,7 @@ import RoomMenuItem from "./RoomMenuItem.vue";
     color: white;
     text-align: center;
     background-color: var.$color-light;
-    padding: map-get(var.$spaces, "2xs");
+    padding: map-get(var.$spaces, '2xs');
   }
 
   .left-menu-bottom {
