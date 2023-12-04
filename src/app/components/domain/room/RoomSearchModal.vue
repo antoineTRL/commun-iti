@@ -63,7 +63,7 @@ async function onSubmit(form?: FormInstance) {
                 }
             }
         } else {
-            console.error('Selected room not found:', formModel.value.roomId);
+            console.error('Selected room not found:', formModel.roomId);
         }
 
         hide();
