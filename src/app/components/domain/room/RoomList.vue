@@ -49,20 +49,20 @@ function selectRoom(room: Room) {
 }
 </style>
 
-<!--<script lang="ts">-->
+<script lang="ts">
 
-<!--import type { NavigationGuardNext, RouteLocationNormalized } from 'vue-router';-->
+import type { NavigationGuardNext, RouteLocationNormalized } from 'vue-router';
 
-<!--export default {-->
-<!--    beforeRouteEnter(to: RouteLocationNormalized, from: RouteLocationNormalized, next: NavigationGuardNext) {-->
-<!--        // Check if there's a current room-->
-<!--        if (!state.currentRoom && state.rooms.length > 0) {-->
-<!--            // If no current room and there are rooms available, redirect to the first room-->
-<!--            next({ path: `/app/room/${state.rooms[0].id}` });-->
-<!--        } else {-->
-<!--            // Continue with the normal route-->
-<!--            next();-->
-<!--        }-->
-<!--    },-->
-<!--};-->
-<!--</script>-->
+export default {
+    beforeRouteEnter(to: RouteLocationNormalized, from: RouteLocationNormalized, next: NavigationGuardNext) {
+        // Check if there's a current room
+        if (!state.currentRoom && state.rooms.length > 0) {
+            // If no current room and there are rooms available, redirect to the first room
+            next({ path: `/app/room/${state.rooms[0].id}` });
+        } else {
+            // Continue with the normal route
+            next();
+        }
+    },
+};
+</script>
