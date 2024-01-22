@@ -60,7 +60,7 @@ async function onSubmit(form?: FormInstance) {
         }
 
         // Créer la salle en utilisant RoomService
-        const newRoom = await roomService.create({ name: formModel.name });
+        const newRoom = await roomService.create({ name: formModel.value.name });
 
         // Rediriger vers la nouvelle salle
         router.push(`/app/room/${newRoom.id}`);
@@ -81,12 +81,12 @@ defineExpose({
 <template>
     <el-dialog v-model="isVisible" title="Création d'un nouveau salon" width="30%">
         <el-form
-                ref="form"
-                :model="formModel"
-                :rules="formRules"
-                label-position="top"
-                class="login-form"
-                @submit.prevent="onSubmit(form!)"
+            ref="form"
+            :model="formModel"
+            :rules="formRules"
+            label-position="top"
+            class="login-form"
+            @submit.prevent="onSubmit(form!)"
         >
             <el-form-item label="Nom du salon" prop="name">
                 <el-input v-model="formModel.name" type="text"></el-input>
