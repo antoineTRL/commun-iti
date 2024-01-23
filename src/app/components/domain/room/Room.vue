@@ -62,6 +62,7 @@ async function fetchMore() {
   try {
     loading.value = true;
 
+
     // TODO fetch more messages
   } catch (e) {
     console.error(e);
