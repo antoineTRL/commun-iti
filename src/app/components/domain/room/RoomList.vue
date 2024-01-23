@@ -40,9 +40,20 @@ function selectRoom(room: Room) {
             text-decoration: none;
             display: block;
 
-            &:hover {
-                background-color: var.$color-light;
-                cursor: pointer;
+            a {
+                color: var.$color-lighter;
+                text-decoration: none;
+                display: block;
+                padding: map-get(var.$spaces, "2xs") map-get(var.$spaces, "xs");
+
+                &:hover {
+                    background-color: var.$color-light;
+                }
+
+                &.router-link-active {
+                    color: #ffffff;
+                    font-weight: 500;
+                }
             }
         }
     }
