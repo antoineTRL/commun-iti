@@ -16,10 +16,10 @@ const state = useState(MessageStore);
 const authState = useState(AuthenticationStore);
 const store = useStore(MessageStore);
 
-const [messageSerivce, messageSocket, roomSocket] = useProvider([
-  MessageService,
-  MessageSocketService,
-  RoomSocketService
+const [messageService, messageSocket, roomSocket] = useProvider([
+    MessageService,
+    MessageSocketService,
+    RoomSocketService
 ]);
 
 const loading = ref(false);
@@ -34,50 +34,88 @@ const container = ref<HTMLDivElement | null>(null);
 const root = ref<HTMLDivElement | null>(null);
 
 subscribeToIncomingMessage();
-
+subscribeToJoinRoom();
+subscribeToQuitRoom();
+subscribeToIncomingReaction();
 
 watch(
-  () => props.room,
-  async () => {
-    /**
-     * Each time the room changes, fetch messages and subscribe to new messages
-     */
-    
-    store.reset();
-    await fetchMore();
+    () => props.room,
+    async () => {
+        /**
+         * Each time the room changes, fetch messages and subscribe to new messages
+         */
 
-    subscribeToIncomingMessage();
-  }
+        store.reset();
+        await fetchMore();
+
+        subscribeToIncomingMessage();
+        subscribeToJoinRoom();
+        subscribeToQuitRoom();
+        subscribeToIncomingReaction();
+    }
 );
 
 function subscribeToIncomingMessage() {
-  // TODO
+    messageSocket.onNewMessage(props.room.id, () => {});
+}
+
+function subscribeToJoinRoom() {
+    roomSocket.onRoomJoined((reaction) => {
+        if (reaction.user.id !== authState.loggedUser?.id) {
+            ElNotification({
+                message: `${reaction.user.username} a rejoint le salon`,
+                type: "info"
+            });
+        }
+    });
+}
+
+function subscribeToQuitRoom() {
+    roomSocket.onRoomLeft((reaction) => {
+        if (reaction.user.id !== authState.loggedUser?.id) {
+            ElNotification({
+                message: `${reaction.user.username} a quitté le salon`,
+                type: "info"
+            });
+        }
+    });
+}
+
+function subscribeToIncomingReaction() {
+    messageSocket.onNewReaction((reaction) => {
+        if (reaction.user.id !== authState.loggedUser?.id) {
+            ElNotification({
+                message: `${reaction.user.username} a réagi à votre message ${reaction.emoji}`,
+                type: "info"
+            });
+        }
+    });
 }
 
 async function fetchMore() {
-  if (loading.value) {
-    return;
-  }
+    if (loading.value) {
+        return;
+    }
 
-  try {
-    loading.value = true;
+    try {
+        loading.value = true;
 
-
-    // TODO fetch more messages
-  } catch (e) {
-    console.error(e);
-  } finally {
-    loading.value = false;
-  }
+        await messageService.fetchMore(props.room.id);
+    } catch (e) {
+        console.error(e);
+    } finally {
+        loading.value = false;
+    }
 }
 </script>
 
 <template>
-  <div class="room stretch-wh" ref="root">
-    <div class="room-container" ref="container">
-      <div ref="top"></div>
+    <div class="room stretch-wh" ref="root">
+        <div class="room-container" ref="container">
+            <Message v-for="mess in store.state.currentRoomMessages" :key="mess.id" :message="mess" />
+            <div ref="top"></div>
+        </div>
     </div>
-  </div>
 </template>
 
 <style lang="scss" scoped>

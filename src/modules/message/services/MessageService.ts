@@ -15,7 +15,7 @@ export class MessageService {
   @inject(MessageDataParser) private readonly parser!: MessageDataParser;
   @inject(AuthenticationStore) private readonly authStore!: AuthenticationStore;
   @inject(RoomStore) private readonly roomStore!: RoomStore;
-  
+
   async sendMessage(newMessage: NewMessage) {
     const messageData = await this.api.sendMessage(newMessage);
     const message = this.parser.parse(messageData);
@@ -61,12 +61,12 @@ export class MessageService {
     const messagesPagination = this.store.state.messagesPagination;
 
     return this.fetch(
-      roomId,
-      {
-        page: messagesPagination.page + 1,
-        perPage: messagesPagination.perPage
-      },
-      true
+        roomId,
+        {
+          page: messagesPagination.page + 1,
+          perPage: messagesPagination.perPage
+        },
+        true
     );
   }
 
@@ -75,12 +75,12 @@ export class MessageService {
       const messagesPagination = this.store.state.messagesPagination;
 
       await this.fetch(
-        this.roomStore.state.currentRoom.id,
-        {
-          page: 0,
-          perPage: messagesPagination.perPage
-        },
-        false
+          this.roomStore.state.currentRoom.id,
+          {
+            page: 0,
+            perPage: messagesPagination.perPage
+          },
+          false
       );
     }
   }
