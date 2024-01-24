@@ -10,18 +10,22 @@ const [messageService] = useProvider([MessageService]);
 const roomState = useState(RoomStore);
 
 const sendMessage = (richTextContent: RichText) => {
+
     if (richTextContent && roomState.currentRoom) {
         const newMessage: NewMessage = {
             roomId: roomState.currentRoom.id,
             text: richTextContent
         };
+
         messageService.sendMessage(newMessage);
     }
 };
 </script>
 <template>
     <div class="message-input stretch-wh">
+
         <rich-text-editor @input="sendMessage" />
+
     </div>
 </template>
 <style lang="scss" scoped>
