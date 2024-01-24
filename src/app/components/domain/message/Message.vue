@@ -50,8 +50,7 @@ function removeEmoji(emoji: EmojiReaction) {
                 <RichText :text="props.message.text" />
             </div>
             <MessageAttachements
-                    v-show="props.message.attachements.length > 0"
-                    :attachements="props.message.attachements"
+                    v-show="props.message.attachements.length > 0" :attachements="props.message.attachements"
             />
             <message-reactions :reactions="props.message.reactions" @reactionClick="removeEmoji" />
         </div>
